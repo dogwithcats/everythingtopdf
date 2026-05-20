@@ -18,7 +18,6 @@ import { jsPDF } from 'jspdf';
 import type { EnhanceMode } from './imageWorker';
 
 type PdfMode = 'original' | 'a4';
-type EnhancePreviewMode = Exclude<EnhanceMode, 'original'>;
 
 type ImageItem = {
   id: string;
@@ -97,7 +96,7 @@ export default function App() {
   const [mode, setMode] = useState<PdfMode>('a4');
   const [isBusy, setIsBusy] = useState(false);
   const [scanEnabled, setScanEnabled] = useState(false);
-  const [enhanceMode, setEnhanceMode] = useState<EnhancePreviewMode>('document');
+  const [enhanceMode, setEnhanceMode] = useState<EnhanceMode>('document');
   const [progress, setProgress] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [previewItem, setPreviewItem] = useState<ImageItem | null>(null);
@@ -108,7 +107,7 @@ export default function App() {
 
   const accept = useMemo(() => ['image/jpeg', 'image/png', 'image/webp'], []);
 
-  const processImage = (id: string, dataUrl: string, targetMode: EnhancePreviewMode): Promise<string> => {
+  const processImage = (id: string, dataUrl: string, targetMode: Exclude<EnhanceMode, 'original'>): Promise<string> => {
     const key = `${id}:${targetMode}`;
     const cached = cacheRef.current.get(key);
     if (cached) return Promise.resolve(cached);
@@ -152,7 +151,7 @@ export default function App() {
     if (!scanEnabled || !item.preferEnhanced || enhanceMode === 'original') return item.dataUrl;
     setProgress(`正在处理第 ${index + 1} / ${total} 张`);
     try {
-      return await processImage(item.id, item.dataUrl, enhanceMode);
+      return await processImage(item.id, item.dataUrl, enhanceMode as Exclude<EnhanceMode, 'original'>);
     } catch {
       setErrorMsg('部分图片增强失败，已自动回退原图继续生成。');
       return item.dataUrl;
@@ -177,7 +176,7 @@ export default function App() {
         }
 
         if (mode === 'original') {
-          doc.addImage(source, 'PNG', 0, 0, item.width, item.height, undefined, 'NONE');
+          doc.addImage(source, undefined, 0, 0, item.width, item.height, undefined, 'NONE');
         } else {
           const pageW = doc.internal.pageSize.getWidth();
           const pageH = doc.internal.pageSize.getHeight();
@@ -186,7 +185,7 @@ export default function App() {
           const drawH = item.height * ratio;
           const x = (pageW - drawW) / 2;
           const y = (pageH - drawH) / 2;
-          doc.addImage(source, 'PNG', x, y, drawW, drawH, undefined, 'NONE');
+          doc.addImage(source, undefined, x, y, drawW, drawH, undefined, 'NONE');
         }
 
         await new Promise((r) => setTimeout(r, 0));
@@ -207,7 +206,7 @@ export default function App() {
     }
     setProgress('单张图片处理中...');
     try {
-      const out = await processImage(item.id, item.dataUrl, enhanceMode);
+      const out = await processImage(item.id, item.dataUrl, enhanceMode as Exclude<EnhanceMode, 'original'>);
       setPreviewEnhanced(out);
     } catch {
       setPreviewEnhanced(item.dataUrl);
@@ -225,7 +224,7 @@ export default function App() {
 
         <div className="scan-box">
           <label><input type="checkbox" checked={scanEnabled} onChange={(e) => setScanEnabled(e.target.checked)} /> 启用扫描增强</label>
-          <select value={enhanceMode} onChange={(e) => setEnhanceMode(e.target.value as EnhancePreviewMode)} disabled={!scanEnabled}>
+          <select value={enhanceMode} onChange={(e) => setEnhanceMode(e.target.value as EnhanceMode)} disabled={!scanEnabled}>
             <option value="original">原图</option>
             <option value="document">文档增强</option>
             <option value="bw">黑白扫描</option>
