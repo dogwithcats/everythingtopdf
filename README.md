@@ -51,3 +51,11 @@ npm run dev
 
 - 为避免某些代码托管/PR 工具对二进制文件的限制，当前版本不包含二进制图标文件。
 - 如需图标，可后续在本地自行补充 `public/icon16.png`、`public/icon48.png`、`public/icon128.png` 并在 `manifest.json` 增加 `icons` 字段。
+
+
+## Chrome 应用商店图标说明
+
+- 已提供符合商店安全区规范的 128 模板：`public/logo-store-128-template.svg`。
+- 该模板按 **128x128 画布 + 中心 96x96 主体 + 四周 16px 透明边距** 设计。
+- 上传商店前请导出为 PNG：`icon128.png`（必须 PNG）。
+- 建议再从同一母版导出 `icon48.png`、`icon16.png`，并在 `manifest.json` 中配置 `icons` 与 `action.default_icon`。
