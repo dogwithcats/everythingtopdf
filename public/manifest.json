@@ -1,0 +1,11 @@
+{
+  "manifest_version": 3,
+  "name": "Image to PDF Pro",
+  "version": "1.0.1",
+  "description": "Convert multiple images to high-quality PDF locally.",
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Image to PDF Pro"
+  },
+  "permissions": ["downloads"]
+}
