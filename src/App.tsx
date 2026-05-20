@@ -60,20 +60,20 @@ function SortableCard({ item, onDelete }: { item: ImageItem; onDelete: (id: stri
     id: item.id
   });
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1
-  };
-
   return (
-    <div ref={setNodeRef} style={style} className="card" {...attributes} {...listeners}>
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.58 : 1 }}
+      className="card"
+      {...attributes}
+      {...listeners}
+    >
       <img src={item.dataUrl} alt={item.file.name} className="thumb" />
       <div className="meta">
         <div className="name" title={item.file.name}>{item.file.name}</div>
         <div className="sub">{formatSize(item.file.size)} · {item.width} × {item.height}</div>
       </div>
-      <button className="ghost" onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}>删除</button>
+      <button className="ghost danger" onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}>删除</button>
     </div>
   );
 }
@@ -135,50 +135,56 @@ export default function App() {
         }
       });
 
-      const fileName = `images-${new Date().toISOString().slice(0, 10)}.pdf`;
-      doc.save(fileName);
+      doc.save(`images-${new Date().toISOString().slice(0, 10)}.pdf`);
     } finally {
       setIsBusy(false);
     }
   };
 
+  const totalSize = items.reduce((sum, item) => sum + item.file.size, 0);
+
   return (
     <main className="app">
-      <h1>图片转 PDF</h1>
-      <p className="muted">本地处理，无需上传。支持拖拽排序后一次性导出高质量 PDF。</p>
+      <section className="surface">
+        <h1>图片转 PDF</h1>
+        <p className="muted">本地处理，无需上传。拖拽排序后导出高质量 PDF。</p>
 
-      <label className="upload">
-        <input
-          ref={inputRef}
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          multiple
-          onChange={(e) => void addFiles(e.target.files)}
-        />
-        选择图片（JPG / PNG / WEBP）
-      </label>
+        <label className="upload">
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            multiple
+            onChange={(e) => void addFiles(e.target.files)}
+          />
+          <span className="upload-title">+ 添加图片</span>
+          <span className="upload-sub">JPG / PNG / WEBP · 可多选</span>
+        </label>
 
-      <div className="toolbar">
-        <select value={mode} onChange={(e) => setMode(e.target.value as PdfMode)}>
-          <option value="a4">A4 自适应</option>
-          <option value="original">原图尺寸</option>
-        </select>
-        <button className="ghost" onClick={() => setItems([])} disabled={!items.length}>清空</button>
-        <button onClick={() => void generatePdf()} disabled={!items.length || isBusy}>
-          {isBusy ? '生成中...' : '生成 PDF'}
-        </button>
-      </div>
+        <div className="toolbar">
+          <select value={mode} onChange={(e) => setMode(e.target.value as PdfMode)}>
+            <option value="a4">A4 自适应</option>
+            <option value="original">原图尺寸</option>
+          </select>
+          <button className="ghost" onClick={() => setItems([])} disabled={!items.length}>清空</button>
+          <button className="primary" onClick={() => void generatePdf()} disabled={!items.length || isBusy}>
+            {isBusy ? '生成中...' : '生成 PDF'}
+          </button>
+        </div>
 
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
-        <SortableContext items={items.map((i) => i.id)} strategy={rectSortingStrategy}>
-          <section className="grid">
-            {items.map((item) => (
-              <SortableCard key={item.id} item={item} onDelete={(id) => setItems((arr) => arr.filter((x) => x.id !== id))} />
-            ))}
-            {!items.length && <div className="empty">先上传图片，支持拖拽排序与删除。</div>}
-          </section>
-        </SortableContext>
-      </DndContext>
+        <div className="stats">共 {items.length} 张 · 总大小 {formatSize(totalSize)}</div>
+
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={onDragEnd}>
+          <SortableContext items={items.map((i) => i.id)} strategy={rectSortingStrategy}>
+            <section className="grid">
+              {items.map((item) => (
+                <SortableCard key={item.id} item={item} onDelete={(id) => setItems((arr) => arr.filter((x) => x.id !== id))} />
+              ))}
+              {!items.length && <div className="empty">先上传图片，支持拖拽排序与删除。</div>}
+            </section>
+          </SortableContext>
+        </DndContext>
+      </section>
     </main>
   );
 }
