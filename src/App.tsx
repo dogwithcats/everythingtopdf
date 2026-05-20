@@ -177,7 +177,7 @@ export default function App() {
         }
 
         if (mode === 'original') {
-          doc.addImage(source, undefined, 0, 0, item.width, item.height, undefined, 'NONE');
+          doc.addImage(source, 'PNG', 0, 0, item.width, item.height, undefined, 'NONE');
         } else {
           const pageW = doc.internal.pageSize.getWidth();
           const pageH = doc.internal.pageSize.getHeight();
@@ -186,7 +186,7 @@ export default function App() {
           const drawH = item.height * ratio;
           const x = (pageW - drawW) / 2;
           const y = (pageH - drawH) / 2;
-          doc.addImage(source, undefined, x, y, drawW, drawH, undefined, 'NONE');
+          doc.addImage(source, 'PNG', x, y, drawW, drawH, undefined, 'NONE');
         }
 
         await new Promise((r) => setTimeout(r, 0));
