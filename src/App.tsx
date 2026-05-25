@@ -191,7 +191,28 @@ export default function App() {
         await new Promise((r) => setTimeout(r, 0));
       }
 
-      doc.save(`images-${new Date().toISOString().slice(0, 10)}.pdf`);
+      const fileName = `images-${new Date().toISOString().slice(0, 10)}.pdf`;
+      const blob = doc.output('blob');
+      const url = URL.createObjectURL(blob);
+
+      await new Promise<void>((resolve, reject) => {
+        chrome.downloads.download(
+          {
+            url,
+            filename: fileName,
+            saveAs: true
+          },
+          () => {
+            const err = chrome.runtime.lastError;
+            URL.revokeObjectURL(url);
+            if (err) {
+              reject(new Error(err.message));
+              return;
+            }
+            resolve();
+          }
+        );
+      });
     } finally {
       setIsBusy(false);
       setProgress('');
