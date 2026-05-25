@@ -1,0 +1,22 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Chrome Web Store safe area: 96x96 centered with 16px transparent padding -->
+  <defs>
+    <linearGradient id="bg" x1="16" y1="16" x2="112" y2="112" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2563EB"/>
+      <stop offset="1" stop-color="#1D4ED8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- 96x96 icon body inside safe area -->
+  <rect x="16" y="16" width="96" height="96" rx="24" fill="url(#bg)"/>
+
+  <path d="M42 34C42 31.8 43.8 30 46 30H72L84 42V82C84 84.2 82.2 86 80 86H46C43.8 86 42 84.2 42 82V34Z" fill="#F8FAFC"/>
+  <path d="M72 30V38.8C72 40.57 73.43 42 75.2 42H84" fill="#BFDBFE"/>
+
+  <rect x="48" y="52" width="30" height="4" rx="2" fill="#93C5FD"/>
+  <rect x="48" y="60" width="24" height="4" rx="2" fill="#93C5FD"/>
+  <rect x="48" y="68" width="16" height="4" rx="2" fill="#93C5FD"/>
+
+  <circle cx="86" cy="80" r="14" fill="#0F172A"/>
+  <path d="M80 80L84.5 84.5L92 77" stroke="#22C55E" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
